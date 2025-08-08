@@ -112,3 +112,30 @@ FROM users u
 LEFT JOIN transactions t ON u.user_id = t.to_user_id
 WHERE u.user_id = 1
 ORDER BY t.transaction_date;
+Price Ranged Analysis
+WITH sorting_price AS (
+SELECT 
+CASE WHEN ROUND(sale_price,1) < 10 THEN '0-10' 
+WHEN ROUND(sale_price,1) BETWEEN 10 AND 25 THEN '10-25'
+WHEN ROUND(sale_price,1) BETWEEN 25 AND 50 THEN '25-50'
+ELSE '50+' END AS price_band,
+COUNT(*) OVER () AS transaction_count
+FROM transactions
+) 
+SELECT price_band,
+COUNT(*) OVER () AS transaction_count,
+ROUND((COUNT(*):: DECIMAL/ MAX(transaction_count)*100),1) AS sale_pct
+FROM sorting_price
+GROUP BY price_band
+ORDER BY CASE price_band
+WHEN '0-10' THEN 1
+WHEN '10-25' THEN 2
+WHEN '25-50' THEN 3 ELSE 4 END;
+
+Time-Based Trading Activity
+SELECT TO_CHAR(transaction_date,'MM-YYYY') AS month_year,
+COUNT(*) AS no_of_transactions,
+SUM(sale_price) total_sales
+FROM transactions
+GROUP BY TO_CHAR(transaction_date,'MM-YYYY')
+ORDER BY TO_CHAR(transaction_date,'MM-YYYY');
