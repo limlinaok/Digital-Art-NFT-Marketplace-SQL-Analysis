@@ -57,7 +57,6 @@ FROM initial_sale i
 LEFT JOIN secondary_sale ss ON i.artist_id = ss.artist_id
 ORDER BY total_revenue DESC;
 
-
 Total sales volume
 SELECT a.artist_id, a.username, a.verification_status,
 a.total_sales_volume AS total_revenue_by_artists, COUNT(c.collection_id) AS total_collection
@@ -65,7 +64,6 @@ FROM artists a
 INNER JOIN collections c ON a.artist_id = c.artist_id
 GROUP BY a.artist_id, a.username, a.verification_status
 LIMIT 3;
-
 
 Price appreciation Subquery
 WITH new_price AS (
@@ -112,6 +110,7 @@ FROM users u
 LEFT JOIN transactions t ON u.user_id = t.to_user_id
 WHERE u.user_id = 1
 ORDER BY t.transaction_date;
+
 Price Ranged Analysis
 WITH sorting_price AS (
 SELECT 
